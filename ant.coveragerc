@@ -1,9 +1,0 @@
-# include every Python file under the repo root
-source = *.c
-
-# exclude tests, virtualenvs, build artifacts, etc.
-omit =
-    */tests/*
-    */.venv/*
-    */build/*
-    */dist/*
