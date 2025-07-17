@@ -1,39 +1,36 @@
-# 檔案路徑: .github/workflows/codeant_coverage.yml
-
 name: CodeAnt Test Coverage
 
-# 觸發此工作流程的事件
 on:
   push:
-    branches: [ "main" ] # 當推送到 main 分支時觸發
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ] # 當有 PR 指向 main 分支時觸發
+    branches: [ "main" ]
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest # 使用最新的 Ubuntu 虛擬環境
+    runs-on: ubuntu-latest
     steps:
-      # 步驟 1: 從 GitHub 倉庫取得您的程式碼
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 步驟 2: 設定 Python 環境
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # 請根據您的專案需求調整 Python 版本
+          # 請根據您的專案需求調整 Python 版本
+          python-version: '3.10'
 
-      # 步驟 4: 執行測試並產生覆蓋率報告 (來自您的範例)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
       - name: Run tests and generate coverage
         id: generate-test-coverage
         run: |
           coverage run -m pytest tests/
           coverage xml -o coverage.xml
-          echo "--- Coverage XML Content (for debugging) ---"
-          cat coverage.xml
-          echo "--------------------------------------------"
 
-      # 步驟 5: 下載 CodeAnt 上傳腳本 (來自您的範例)
       - name: Fetch upload script
         env:
           API_BASE: https://ved6vc7dkvz3veaigrllnasa4y0kmqbw.lambda-url.ap-south-1.on.aws
@@ -41,14 +38,12 @@ jobs:
           curl -sS -X GET "${API_BASE}/pr/analysis/coverage/script/get" \
             --output upload_coverage.sh
 
-      # 步驟 6: 賦予腳本執行權限 (來自您的範例)
       - name: Make script executable
         run: chmod +x upload_coverage.sh
 
-      # 步驟 7: 上傳報告並設定狀態 (來自您的範例)
       - name: Upload coverage and set status
         env:
-          # !!! 重要 !!!: 您必須在 GitHub Repo 設定中建立一個名為 ACCESS_TOKEN 的 Secret
+          # 重要: 您必須在 GitHub Repo 設定中建立一個名為 ACCESS_TOKEN 的 Secret
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           REPO_NAME:    ${{ github.repository }}
           COMMIT_ID:    ${{ github.sha }}
@@ -58,36 +53,5 @@ jobs:
             -r "$REPO_NAME" \
             -c "$COMMIT_ID" \
             -f coverage.xml \
-            -p github
-  
-  - name: Run tests and generate coverage
-    id: generate-test-coverage
-    run: |
-      source .venv/bin/activate
-      uv pip install coverage pytest
-      coverage run -m pytest tests/
-      coverage xml -o coverage.xml
-      cat coverage.xml
-
-  - name: Fetch upload script
-    env:
-      API_BASE: https://ved6vc7dkvz3veaigrllnasa4y0kmqbw.lambda-url.ap-south-1.on.aws
-    run: |
-      curl -sS -X GET "${API_BASE}/pr/analysis/coverage/script/get" \
-        --output upload_coverage.sh
-
-  - name: Make script executable
-    run: chmod +x upload_coverage.sh
-
-  - name: Upload coverage and set status
-    env:
-      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-      REPO_NAME:    ${{ github.repository }}
-      COMMIT_ID:    ${{ github.sha }}
-    run: |
-      bash upload_coverage.sh \
-        -t "$ACCESS_TOKEN" \
-        -r "$REPO_NAME" \
-        -c "$COMMIT_ID" \
-        -f coverage.xml \
-        -p github
+            -p github \
+            -m "your_module_name" # 重要: 請將此處替換為您的模組/專案名稱
