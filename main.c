@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-
+uint8_t AddT(uint8_t a, uint8_t b);
 int main()
 {
     uint8_t result;
