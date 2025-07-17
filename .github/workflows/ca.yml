@@ -28,5 +28,4 @@
         -r "$REPO_NAME" \
         -c "$COMMIT_ID" \
         -f coverage.xml \
-        -p github \
-        -m <module_name>
+        -p github
