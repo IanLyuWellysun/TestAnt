@@ -19,12 +19,6 @@ jobs:
           # 請根據您的專案需求調整 Python 版本
           python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install coverage pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
       - name: Run tests and generate coverage
         id: generate-test-coverage
         run: |
@@ -53,5 +47,4 @@ jobs:
             -r "$REPO_NAME" \
             -c "$COMMIT_ID" \
             -f coverage.xml \
-            -p github \
-            -m "your_module_name" # 重要: 請將此處替換為您的模組/專案名稱
+            -p github
