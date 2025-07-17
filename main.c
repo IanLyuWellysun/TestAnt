@@ -4,7 +4,7 @@ uint8_t AddT(uint8_t a, uint8_t b);
 int main()
 {
     uint8_t result;
-    resutl=AddT(5,3);
+    result=AddT(5,3);
     printf("Hello%d\n",result);
 
     return 0;
